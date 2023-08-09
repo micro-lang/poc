@@ -37,15 +37,15 @@ commits the tokens to the block
 creates a new rule with name \1 and body \2  
 Ex.:
 ```micro
-keyword variable_keyword = let
+keyword var_kw = "let"
 rule variable_declaration {
     match(
-        variable_keyword,
-        capture(var_name, name),
+        "var_kw",
+        capture("var_name"),
         "=",
-        capture(var_value, value or name)
+        capture("var_value")
     ),
-    allocate(capture.var_name, capture.var_value)
+    allocate(capture[0], capture[1])
 }
 ```
 
