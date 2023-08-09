@@ -1,0 +1,63 @@
+# Step 1:
+# - run normal looking code with hardcoded rules.
+
+let x = 2
+let y = 3
+let z = x + y
+
+
+
+# Step 2:
+# - Enable keywords
+# - Disable hardcoded keywords
+# - Update variable_declaration rule
+
+keyword variable_keyword = "new"
+keyword op_plus = "plus"
+keyword assign = "is"
+
+new x is 2
+new y is 3
+new z is x plus y
+
+
+
+# Step 3:
+# - Enable rules
+# - Disable (most) hardcoded rules
+
+keyword variable_insert = "let"
+rule variable_declaration {
+    match(
+        variable_insert,
+        variable_keyword,
+        "=",
+        capture(var_value, value or name)
+    ),
+    allocate(capture.var_name, capture.var_value)
+}
+
+let new x is 2
+let new y is 3
+let new z is x plus y
+
+
+
+# Step 4: TODO
+# - Complex rules
+
+# keyword function_keyword = "fn"
+# keyword function_open = "("
+# keyword function_close = ")"
+# 
+# rule function_declaration {
+#     match(
+#         function_keyword,
+#         capture(fn_name, name),
+#         function_open,
+#         capture(fn_params, any, multiple),
+#         function_close,
+#         capture(fn_body, block)
+#     ),
+#     allocate(capture.fn_name, capture.fn_block)
+# }
