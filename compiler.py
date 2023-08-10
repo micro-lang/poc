@@ -116,15 +116,33 @@ class MicroCompiler:
     def __init__(self):
         self.memory = {}
         self.keywords = {
-            "var_kw": "new",
-            "rule_kw": "rule",
-            "keyword_kw": "kw",
+            "kw_var": "new",
+            "kw_rule": "rule",
+            "kw_keyword": "kw",
+            "kw_block_open": "{",
+            "kw_block_close": "}",
+            "kw_exit": "exit",
         }
         self.rules = {
             Rule(
+                "open",
+                ["kw_block_open"],
+                ControlFlow.BLOCK_OPEN
+            ),
+            Rule(
+                "close",
+                ["kw_block_close"],
+                ControlFlow.BLOCK_CLOSE
+            ),
+            Rule(
+                "exit",
+                ["kw_exit"],
+                ControlFlow.BLOCK_STACK_CLOSE
+            ),
+            Rule(
                 "variable_declaration",
                 [
-                    "var_kw",
+                    "kw_var",
                     Capture("var_name"),
                     "=",
                     Capture("var_value"),
