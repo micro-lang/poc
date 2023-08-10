@@ -11,6 +11,9 @@ from src.data.control_flow import ControlFlow
 from src.data.capture import Capture
 
 
+from src.runtime import MicroRuntime
+
+
 class MicroCompiler:
     def __init__(self):
         self.memory = {}
@@ -47,7 +50,7 @@ class MicroCompiler:
                     Capture("var_value"),
                 ],
                 lambda runtime, captures:
-                    print("allocating " + captures[1] + " to " + captures[0])
+                    print("allocating ", captures[1], " to ", captures[0]),
                     runtime.allocate(
                         captures[0],
                         captures[1]
