@@ -17,16 +17,23 @@ class Rule:
         self.result = result
 
     def check(self, compiler, tokens):
-        print("checking rule `" + self.name + "` \
-                for tokens `" + list_to_str(tokens) + "`")
+        print(
+            "checking rule `"
+            + self.name
+            + "` for tokens "
+            + list_to_str(tokens)
+        )
+
         captures = []
+
         for j in range(len(self.match)):
             pattern = self.match[j]
             token = tokens[j]
-            print("checking token [" + str(j) + "]\
-                    | pattern: `" + str(pattern) + "` \
-                    | token: `" + token + "`"
-                  )
+            print(
+                "checking token [" + str(j)
+                + "] | pattern: `" + str(pattern)
+                + "` | token: `" + token + "`"
+            )
             if isinstance(pattern, Capture):
                 print("pattern is capture, token captured")
                 captures.append(token)
@@ -49,7 +56,7 @@ class MicroCompiler:
         self.keywords = {
             "var_kw": "new",
             "rule_kw": "rule",
-            "keyword_kw": "keyword",
+            "keyword_kw": "kw",
         }
         self.rules = {
             Rule(
@@ -81,7 +88,7 @@ class MicroCompiler:
         del self.memory[address]
 
     def compile(self, source_code):
-        print("Micro compile:\n`" + source_code + "`")
+        print("Micro compile: | `" + source_code + "`")
         tokens = source_code.split()
         print("tokens: " + list_to_str(tokens))
         commands = []
@@ -89,6 +96,7 @@ class MicroCompiler:
             print("current token: `" + tokens[0] + "`")
             found_rule_for_token = False
             for rule in self.rules:
+                print("checking rule `" + rule.name + "`")
                 rule_result = rule.check(
                     self,
                     tokens[:len(rule.match)]
@@ -100,12 +108,8 @@ class MicroCompiler:
                 commands.append(
                     lambda compiler: rule.result(compiler, rule_result)
                 )
-                prev_tokens = tokens
                 tokens = tokens[len(rule.match):]
-                print("tokens removed: " + list_to_str(tokens[:len(rule.match)]) +
-                      "\nprev_tokens: " + list_to_str(prev_tokens) +
-                      "\nnew_tokens: " + list_to_str(tokens)
-                      )
+                found_rule_for_token = True
             if not found_rule_for_token:
                 print("Invalid syntax at token " + tokens[0])
                 return False
@@ -115,9 +119,13 @@ class MicroCompiler:
 
 def list_to_str(items):
     def append(item):
-        return "`".join(item).join("`")
+        return "`" + str(item) + "`"
 
-    return "".join(append(i).join(", ") for i in items[:-1]).join(append(items[-1]))
+    result = ""
+    for i in items[:-1]:
+        result += append(i) + ", "
+
+    return result + append(items[-1])
 
 
 # Create an instantce of the compiler
