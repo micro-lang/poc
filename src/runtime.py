@@ -1,4 +1,5 @@
-class MicroRuntime: def __init__(self, block):
+class MicroRuntime:
+    def __init__(self, block):
         self.block = block
 
     def allocate(self, address, value):
