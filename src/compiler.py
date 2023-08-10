@@ -46,8 +46,9 @@ class MicroCompiler:
                     "=",
                     Capture("var_value"),
                 ],
-                lambda compiler, captures:
-                    compiler.allocate(
+                lambda runtime, captures:
+                    print("allocating " + captures[1] + " to " + captures[0])
+                    runtime.allocate(
                         captures[0],
                         captures[1]
                     )
@@ -59,12 +60,6 @@ class MicroCompiler:
 
     def rule_del(self, name):
         del self.rules[name]
-
-    def allocate(self, address, value):
-        self.memory[address] = value
-
-    def free(self, address):
-        del self.memory[address]
 
     def compile(self, source_code):
         # print("Micro compile: | `" + source_code + "`")

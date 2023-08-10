@@ -53,6 +53,6 @@ class Rule:
 
         return Command(
             list_to_str(tokens),
-            (lambda: self.result(compiler, captures)) if callable(self.result)
+            (lambda runtime: self.result(runtime, captures)) if callable(self.result)
             else self.result
         )
