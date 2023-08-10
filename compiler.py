@@ -18,6 +18,54 @@ class Capture:
         return "Capture{".join(self.name).join("}")
 
 
+class Command:
+    def __init__(self, name, run):
+        self.name = name
+        self.run = run
+
+    def print(self, identation):
+        print(''.join(["| " for _ in range(identation)]) + self.name)
+
+
+class Block:
+    def __init__(self):
+        self.content = []
+
+    def append(self, item):
+        self.content.append(item)
+
+    def print(self, identation):
+        tabs = ''.join(["| " for _ in range(identation)])
+        print(tabs + "Block")
+        for item in self.content:
+            item.print(identation + 1)
+
+
+class BlockStack:
+
+    def __init__(self):
+        self.blocks = [Block()]
+
+    def __len__(self):
+        return len(self.blocks)
+
+    def open(self):
+        print(" -------------- new block -------------")
+        self.blocks.append(Block())
+
+    def close(self):
+        print(" ------------- block closed -----------")
+        self.blocks[-2].append(self.blocks.pop(-1))
+
+    def append(self, item):
+        self.blocks[-1].append(item)
+
+    def finish(self):
+        while len(self.blocks) > 1:
+            self.close()
+        return self.blocks[0]
+
+
 class Rule:
     def __init__(self, name, match, result):
         self.name = name
