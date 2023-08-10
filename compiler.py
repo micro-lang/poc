@@ -152,7 +152,7 @@ class MicroCompiler:
                         captures[0],
                         captures[1]
                     )
-            )
+            ),
         }
 
     def rule_add(self, name, match, result):
@@ -168,36 +168,87 @@ class MicroCompiler:
         del self.memory[address]
 
     def compile(self, source_code):
-        print("Micro compile: | `" + source_code + "`")
+        # print("Micro compile: | `" + source_code + "`")
         tokens = source_code.split()
-        print("tokens: " + list_to_str(tokens))
-        commands = []
-        while len(tokens) > 0:
-            print("current token: `" + tokens[0] + "`")
+        # print("tokens: " + list_to_str(tokens))
+
+        block_stack = BlockStack()
+
+        while len(tokens) > 0 and len(block_stack) > 0:
+            # print("current token: `" + tokens[0] + "`")
+
             found_rule_for_token = False
             for rule in self.rules:
-                print("checking rule `" + rule.name + "`")
+
+                # print("checking rule `" + rule.name + "`")
                 rule_result = rule.check(
                     self,
                     tokens[:len(rule.match)]
                 )
+
                 if rule_result is False:
-                    print("rule returned false, skipping...")
+                    # print("rule returned false, skipping...")
                     continue
-                print("rule returned commands, appending...")
-                commands.append(
-                    lambda compiler: rule.result(compiler, rule_result)
+
+                print(
+                    str(rule_result)
+                    + " is "
+                    + str(ControlFlow.BLOCK_OPEN)
+                    + " ? "
+                    + str(rule_result == str(ControlFlow.BLOCK_OPEN))
                 )
+                if rule_result == ControlFlow.BLOCK_OPEN:
+                    block_stack.open()
+
+                print(
+                    str(rule_result)
+                    + " is "
+                    + str(ControlFlow.BLOCK_CLOSE)
+                    + " ? "
+                    + str(rule_result == str(ControlFlow.BLOCK_CLOSE))
+                )
+                if rule_result == ControlFlow.BLOCK_CLOSE:
+                    block_stack.close()
+
+                print(
+                    str(rule_result)
+                    + " is "
+                    + str(ControlFlow.BLOCK_STACK_CLOSE)
+                    + " ? "
+                    + str(rule_result == str(ControlFlow.BLOCK_STACK_CLOSE))
+                )
+
+                if rule_result == ControlFlow.BLOCK_STACK_CLOSE:
+                    return block_stack.finish()
+
+                # TODO: change Rule.check result type to be:
+                # 1. the `Command` itself to be added to `block_stack`. Give `compiler` as argument of Rule.check
+                # 2. a ControlFlow. This way the above checks of Bloc_OPEN (etc) work
+                else:
+                    # print("rule returned commands, appending...")
+                    block_stack.append(Command(
+                        "`".join([
+                            str(token)
+                            + " " for token in tokens[:len(rule.match)]
+                        ]) + "`",
+                        lambda compiler: rule.result(compiler, rule_result)
+                    ))
+
                 tokens = tokens[len(rule.match):]
                 found_rule_for_token = True
+
             if not found_rule_for_token:
-                print("Invalid syntax at token " + tokens[0])
+                # print("Invalid syntax at token " + tokens[0])
                 return False
-        print("code compiled successfully!")
-        return commands
+
+        # print("code compiled successfully!")
+        return block_stack.finish()
 
 
 def list_to_str(items):
+    if len(items) == 0:
+        return "`empty`"
+
     def append(item):
         return "`" + str(item) + "`"
 
@@ -218,8 +269,20 @@ compiler = MicroCompiler()
 micro_code = """
 new x = 2
 new y = 3
+{
+    new z = 4
+    new w = 5
+    {
+        new v = 6
+        new u = 7
+    }
+    new p = 8
+}
 """
 
-commands = compiler.compile(micro_code)
+main_block = compiler.compile(micro_code)
 
-print(commands)
+if main_block is False:
+    print("Compilation Error. MicroCompiler.compile() returned False!")
+else:
+    main_block.print(0)
