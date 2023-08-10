@@ -73,6 +73,12 @@ class Rule:
         self.result = result
 
     def check(self, compiler, tokens):
+        if len(self.match) != len(tokens):
+            print(
+                "Rule Error - number of tokens don't match number of patterns!"
+            )
+            return ControlFlow.BLOCK_STACK_CLOSE
+
         print(
             "checking rule `"
             + self.name
