@@ -1,138 +1,17 @@
-# import re
-from enum import Enum
+# from src.data import (
+#     Rule,
+#     BlockStack,
+#     ControlFlow,
+#     Capture,
+# )
 
-
-class ControlFlow(Enum):
-    BLOCK_OPEN = 0,
-    BLOCK_CLOSE = 1,
-    BLOCK_STACK_CLOSE = 2,
-
-
-class Capture:
-    name = ""
-
-    def __init__(self, _name):
-        self.name = _name
-
-    def __str__(self):
-        return "Capture{".join(self.name).join("}")
-
-
-class Command:
-    def __init__(self, name, run):
-        self.name = name
-        self.run = run
-
-    def print(self, identation):
-        tabs = ''
-        for _ in range(identation):
-            tabs += "| "
-        print(tabs + str(self))
-
-    def __str__(self):
-        return self.name + " " + str(self.run)
-
-
-class Block:
-    def __init__(self):
-        self.content = []
-
-    def append(self, item):
-        self.content.append(item)
-
-    def print(self, identation):
-        tabs = ''
-        for _ in range(identation):
-            tabs += "| "
-
-        print(tabs)
-        print(tabs + "Block | " + str(identation))
-        for item in self.content:
-            item.print(identation + 1)
-        print(tabs)
-
-
-class BlockStack:
-
-    def __init__(self):
-        self.blocks = [Block()]
-
-    def __len__(self):
-        return len(self.blocks)
-
-    def open(self):
-        print(" -------------- new block -------------")
-        self.blocks.append(Block())
-
-    def close(self):
-        print(" ------------- block closed -----------")
-        self.blocks[-2].append(self.blocks.pop(-1))
-
-    def append(self, item):
-        self.blocks[-1].append(item)
-
-    def finish(self):
-        while len(self.blocks) > 1:
-            self.close()
-        return self.blocks[0]
-
-
-class Rule:
-    def __init__(self, name, match, result):
-        self.name = name
-        self.match = match
-        self.result = result
-
-    def check(self, compiler, tokens):
-        if len(self.match) != len(tokens):
-            print(
-                "Rule Error - number of tokens don't match number of patterns!"
-            )
-            return Command(
-                "End of File",
-                ControlFlow.BLOCK_STACK_CLOSE
-            )
-
-        print(
-            "checking rule `"
-            + self.name
-            + "` for tokens "
-            + list_to_str(tokens)
-        )
-
-        captures = []
-
-        for j in range(len(self.match)):
-            pattern = self.match[j]
-            token = tokens[j]
-            print(
-                "checking token [" + str(j)
-                + "] | pattern: `" + str(pattern)
-                + "` | token: `" + token + "`"
-            )
-            if isinstance(pattern, Capture):
-                print("pattern is capture, token captured")
-                captures.append(token)
-            elif pattern in compiler.keywords:
-                print("pattern `" + pattern + "` is a keyword")
-                if token != compiler.keywords[pattern]:
-                    print("token `" + token + "` doesn't match the keyword")
-                    return False
-            elif token != pattern:
-                print("pattern is literal, token doesn't match pattern")
-                return False
-
-        print("rule match, returning captures: " + list_to_str(captures))
-
-        return Command(
-            list_to_str(tokens),
-            (lambda: self.result(compiler, captures)) if callable(self.result)
-            else self.result
-        )
+from src.data.rule import Rule
+from src.data.block_stack import BlockStack
+from src.data.control_flow import ControlFlow
+from src.data.capture import Capture
 
 
 class MicroCompiler:
-
     def __init__(self):
         self.memory = {}
         self.keywords = {
@@ -258,46 +137,3 @@ class MicroCompiler:
 
         # print("code compiled successfully!")
         return block_stack.finish()
-
-
-def list_to_str(items):
-    if len(items) == 0:
-        return "`empty`"
-
-    def append(item):
-        return "`" + str(item) + "`"
-
-    result = ""
-    for i in items[:-1]:
-        result += append(i) + ", "
-
-    return result + append(items[-1])
-
-
-# Create an instantce of the compiler
-compiler = MicroCompiler()
-
-# Load Micro code
-# with open("./sample.mi") as file:
-#     micro_code = file.read()
-
-micro_code = """
-new x = 2
-new y = 3
-{
-    new z = 4
-    new w = 5
-    {
-        new v = 6
-        new u = 7
-    }
-    new p = 8
-}
-"""
-
-main_block = compiler.compile(micro_code)
-
-if main_block is False:
-    print("Compilation Error. MicroCompiler.compile() returned False!")
-else:
-    main_block.print(0)
