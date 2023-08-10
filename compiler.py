@@ -88,7 +88,10 @@ class Rule:
             print(
                 "Rule Error - number of tokens don't match number of patterns!"
             )
-            return ControlFlow.BLOCK_STACK_CLOSE
+            return Command(
+                "End of File",
+                ControlFlow.BLOCK_STACK_CLOSE
+            )
 
         print(
             "checking rule `"
@@ -118,8 +121,14 @@ class Rule:
             elif token != pattern:
                 print("pattern is literal, token doesn't match pattern")
                 return False
+
         print("rule match, returning captures: " + list_to_str(captures))
-        return captures
+
+        return Command(
+            list_to_str(tokens),
+            (lambda: self.result(compiler, captures)) if callable(self.result)
+            else self.result
+        )
 
 
 class MicroCompiler:
@@ -196,54 +205,49 @@ class MicroCompiler:
                     self,
                     tokens[:len(rule.match)]
                 )
+                print("Rule Result: ", str(rule_result))
 
                 if rule_result is False:
                     # print("rule returned false, skipping...")
                     continue
 
                 print(
-                    str(rule_result)
+                    str(rule_result.run)
                     + " is "
                     + str(ControlFlow.BLOCK_OPEN)
                     + " ? "
                     + str(rule_result == str(ControlFlow.BLOCK_OPEN))
                 )
-                if rule_result == ControlFlow.BLOCK_OPEN:
-                    block_stack.open()
-
                 print(
-                    str(rule_result)
+                    str(rule_result.run)
                     + " is "
                     + str(ControlFlow.BLOCK_CLOSE)
                     + " ? "
                     + str(rule_result == str(ControlFlow.BLOCK_CLOSE))
                 )
-                if rule_result == ControlFlow.BLOCK_CLOSE:
-                    block_stack.close()
-
                 print(
-                    str(rule_result)
+                    str(rule_result.run)
                     + " is "
                     + str(ControlFlow.BLOCK_STACK_CLOSE)
                     + " ? "
                     + str(rule_result == str(ControlFlow.BLOCK_STACK_CLOSE))
                 )
 
-                if rule_result == ControlFlow.BLOCK_STACK_CLOSE:
+                if rule_result.run == ControlFlow.BLOCK_OPEN:
+                    block_stack.open()
+                elif rule_result.run == ControlFlow.BLOCK_CLOSE:
+                    block_stack.close()
+                elif rule_result.run == ControlFlow.BLOCK_STACK_CLOSE:
                     return block_stack.finish()
 
                 # TODO: change Rule.check result type to be:
-                # 1. the `Command` itself to be added to `block_stack`. Give `compiler` as argument of Rule.check
-                # 2. a ControlFlow. This way the above checks of Bloc_OPEN (etc) work
+                # 1. the `Command` itself to be added to `block_stack`.
+                #       Give `compiler` as argument of Rule.check
+                # 2. a ControlFlow.
+                #       This way the above checks of Block_OPEN (etc) work
                 else:
                     # print("rule returned commands, appending...")
-                    block_stack.append(Command(
-                        "`".join([
-                            str(token)
-                            + " " for token in tokens[:len(rule.match)]
-                        ]) + "`",
-                        lambda compiler: rule.result(compiler, rule_result)
-                    ))
+                    block_stack.append(rule_result)
 
                 tokens = tokens[len(rule.match):]
                 found_rule_for_token = True
