@@ -24,7 +24,13 @@ class Command:
         self.run = run
 
     def print(self, identation):
-        print(''.join(["| " for _ in range(identation)]) + self.name)
+        tabs = ''
+        for _ in range(identation):
+            tabs += "| "
+        print(tabs + str(self))
+
+    def __str__(self):
+        return self.name + " " + str(self.run)
 
 
 class Block:
@@ -35,10 +41,15 @@ class Block:
         self.content.append(item)
 
     def print(self, identation):
-        tabs = ''.join(["| " for _ in range(identation)])
-        print(tabs + "Block")
+        tabs = ''
+        for _ in range(identation):
+            tabs += "| "
+
+        print(tabs)
+        print(tabs + "Block | " + str(identation))
         for item in self.content:
             item.print(identation + 1)
+        print(tabs)
 
 
 class BlockStack:
