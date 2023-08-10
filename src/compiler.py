@@ -114,11 +114,6 @@ class MicroCompiler:
                 elif rule_result.run == ControlFlow.BLOCK_STACK_CLOSE:
                     return block_stack.finish()
 
-                # TODO: change Rule.check result type to be:
-                # 1. the `Command` itself to be added to `block_stack`.
-                #       Give `compiler` as argument of Rule.check
-                # 2. a ControlFlow.
-                #       This way the above checks of Block_OPEN (etc) work
                 else:
                     # print("rule returned commands, appending...")
                     block_stack.append(rule_result)
