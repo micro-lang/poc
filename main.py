@@ -40,4 +40,4 @@ if main_block is False:
 else:
     main_block.print(0)
 
-MicroRuntime(main_block).run()
+    MicroRuntime(main_block).run()
