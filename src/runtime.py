@@ -6,6 +6,10 @@ class MicroRuntime:
     def allocate(self, address, value):
         self.memory[address] = value
 
+    def get(self, address):
+        print(self.memory[address])
+        return self.memory[address]
+
     def free(self, address):
         del self.memory[address]
 
