@@ -45,12 +45,13 @@ class MicroCompiler:
                     "=",
                     Capture("var_value"),
                 ],
-                lambda runtime, captures:
+                lambda runtime, captures: (
                     print("allocating ", captures[1], " to ", captures[0]),
                     runtime.allocate(
                         captures[0],
                         captures[1]
                     )
+                )
             ),
         }
 
