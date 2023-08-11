@@ -9,5 +9,8 @@ class Command:
             tabs += "| "
         print(tabs + str(self))
 
+    def __call__(self, runtime):
+        return self.run(runtime)
+
     def __str__(self):
         return self.name + " " + str(self.run)
