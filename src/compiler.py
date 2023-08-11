@@ -54,6 +54,15 @@ class MicroCompiler:
                     )
                 )
             ),
+            Rule(
+                "variable_access",
+                [
+                    "kw_var_get",
+                    Capture("var_name"),
+                ],
+                lambda runtime, captures:
+                    runtime.get(captures[0])
+            )
         }
 
     def rule_add(self, name, match, result):

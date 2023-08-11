@@ -20,6 +20,17 @@ new y = 3
     }
     new p = 8
 }
+
+get x
+get y
+get z
+get w
+get v
+get u
+get p
+get p
+
+{
 """
 
 main_block = compiler.compile(micro_code)
