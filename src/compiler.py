@@ -14,7 +14,8 @@ from src.data.capture import Capture
 class MicroCompiler:
     def __init__(self):
         self.keywords = {
-            "kw_var": "new",
+            "kw_var_new": "new",
+            "kw_var_get": "get",
             "kw_rule": "rule",
             "kw_keyword": "kw",
             "kw_block_open": "{",
@@ -40,7 +41,7 @@ class MicroCompiler:
             Rule(
                 "variable_declaration",
                 [
-                    "kw_var",
+                    "kw_var_new",
                     Capture("var_name"),
                     "=",
                     Capture("var_value"),
