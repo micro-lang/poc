@@ -10,8 +10,17 @@ class MicroRuntime:
         del self.memory[address]
 
     def run(self):
+        print("starting")
+
         def run_block(block):
-            for command in block.content:
-                if callable(command):
-                    command.run(self)
-                else: run_block(command)
+            for item in block.content:
+                if callable(item):
+                    print("running item")
+                    print(item)
+                    item(self)
+                else:
+                    print("running block")
+                    item.run()
+                    run_block(item)
+        run_block(self.block)
+        print("finished")
