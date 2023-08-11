@@ -12,13 +12,8 @@ class Rule:
 
     def check(self, compiler, tokens):
         if len(self.match) != len(tokens):
-            print(
-                "Rule Error - number of tokens don't match number of patterns!"
-            )
-            return Command(
-                "End of File",
-                ControlFlow.BLOCK_STACK_CLOSE
-            )
+            print(list_to_str(tokens))
+            return False
 
         print(
             "checking rule `"
