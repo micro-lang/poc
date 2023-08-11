@@ -69,7 +69,7 @@ class MicroCompiler:
 
         block_stack = BlockStack()
 
-        while len(tokens) > 0 and len(block_stack) > 0:
+        while len(tokens) > 0:
             # print("current token: `" + tokens[0] + "`")
 
             found_rule_for_token = False
@@ -113,7 +113,8 @@ class MicroCompiler:
                 elif rule_result.run == ControlFlow.BLOCK_CLOSE:
                     block_stack.close()
                 elif rule_result.run == ControlFlow.BLOCK_STACK_CLOSE:
-                    return block_stack.finish()
+                    block_stack.finish()
+                    return block_stack.first()
 
                 else:
                     # print("rule returned commands, appending...")
@@ -126,5 +127,8 @@ class MicroCompiler:
                 # print("Invalid syntax at token " + tokens[0])
                 return False
 
+        if block_stack.isOpen():
+            return False
+
         # print("code compiled successfully!")
-        return block_stack.finish()
+        return block_stack.first()
