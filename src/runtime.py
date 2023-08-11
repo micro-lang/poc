@@ -20,7 +20,7 @@ class MicroRuntime:
                     item(self)
                 else:
                     print("running block")
-                    item.run()
+                    item.print(0)
                     run_block(item)
         run_block(self.block)
         print("finished")
