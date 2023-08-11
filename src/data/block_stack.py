@@ -23,4 +23,9 @@ class BlockStack:
     def finish(self):
         while len(self.blocks) > 1:
             self.close()
+
+    def first(self):
         return self.blocks[0]
+
+    def isOpen(self):
+        return len(self.blocks) > 1
