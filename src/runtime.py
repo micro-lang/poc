@@ -1,6 +1,7 @@
 class MicroRuntime:
     def __init__(self, block):
         self.block = block
+        self.memory = {}
 
     def allocate(self, address, value):
         self.memory[address] = value

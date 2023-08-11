@@ -11,12 +11,8 @@ from src.data.control_flow import ControlFlow
 from src.data.capture import Capture
 
 
-from src.runtime import MicroRuntime
-
-
 class MicroCompiler:
     def __init__(self):
-        self.memory = {}
         self.keywords = {
             "kw_var": "new",
             "kw_rule": "rule",
