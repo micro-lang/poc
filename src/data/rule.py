@@ -16,10 +16,10 @@ class Rule:
             return False
 
         print(
-            "checking rule `"
-            + self.name
-            + "` for tokens "
+            "---> RULE -- checking tokens ["
             + list_to_str(tokens)
+            + "] on rule "
+            + self.name
         )
 
         captures = []

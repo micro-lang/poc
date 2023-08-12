@@ -73,7 +73,7 @@ class MicroCompiler:
         block_stack = BlockStack()
 
         while len(tokens) > 0:
-            # print("current token: `" + tokens[0] + "`")
+            print("CURRENT TOKENS: [" + list_to_str(tokens) + "]")
 
             found_rule_for_token = False
             for rule in self.rules:
@@ -89,28 +89,6 @@ class MicroCompiler:
                     # print("rule returned false, skipping...")
                     continue
 
-                print(
-                    str(rule_result.run)
-                    + " is "
-                    + str(ControlFlow.BLOCK_OPEN)
-                    + " ? "
-                    + str(rule_result == str(ControlFlow.BLOCK_OPEN))
-                )
-                print(
-                    str(rule_result.run)
-                    + " is "
-                    + str(ControlFlow.BLOCK_CLOSE)
-                    + " ? "
-                    + str(rule_result == str(ControlFlow.BLOCK_CLOSE))
-                )
-                print(
-                    str(rule_result.run)
-                    + " is "
-                    + str(ControlFlow.BLOCK_STACK_CLOSE)
-                    + " ? "
-                    + str(rule_result == str(ControlFlow.BLOCK_STACK_CLOSE))
-                )
-
                 if rule_result.run == ControlFlow.BLOCK_OPEN:
                     block_stack.open()
                 elif rule_result.run == ControlFlow.BLOCK_CLOSE:
@@ -123,11 +101,11 @@ class MicroCompiler:
                     # print("rule returned commands, appending...")
                     block_stack.append(rule_result)
 
-                tokens = tokens[len(rule.match):]
+                tokens = tokens[len(rule):]
                 found_rule_for_token = True
 
             if not found_rule_for_token:
-                # print("Invalid syntax at token " + tokens[0])
+                print("Invalid syntax at token " + tokens[0])
                 return False
 
         if block_stack.isOpen():
