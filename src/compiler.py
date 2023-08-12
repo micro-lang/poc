@@ -1,14 +1,8 @@
-# from src.data import (
-#     Rule,
-#     BlockStack,
-#     ControlFlow,
-#     Capture,
-# )
-
 from src.data.rule import Rule
 from src.data.block_stack import BlockStack
 from src.data.control_flow import ControlFlow
 from src.data.capture import Capture
+from src.util import list_to_str
 
 
 class MicroCompiler:
