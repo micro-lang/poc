@@ -16,6 +16,13 @@ class MicroCompiler:
             "kw_block_close": "}",
             "kw_exit": "exit",
         }
+        self.memory = []
+        self.types = {
+            "any": True,
+            "number": r"^\d+$",
+            "name": r"^[a-zA-Z_]$|[a-zA-Z_][a-zA-Z0-9_]*$",
+            "address": lambda compiler, token: compiler.mem_contains(token),
+        }
         self.rules = {
             Rule(
                 "open",
@@ -36,9 +43,9 @@ class MicroCompiler:
                 "variable_declaration",
                 [
                     "kw_var_new",
-                    Capture("var_name"),
+                    Capture("var_name", "name"),
                     "=",
-                    Capture("var_value"),
+                    Capture("var_value", "any"),
                 ],
                 lambda runtime, captures: (
                     print("allocating ", captures[1], " to ", captures[0]),
@@ -46,24 +53,50 @@ class MicroCompiler:
                         captures[0],
                         captures[1]
                     )
+                ),
+                lambda compiler, captures: (
+                    print("registering address", captures[0], "on compiler"),
+                    compiler.mem_add(captures[0])
                 )
             ),
             Rule(
                 "variable_access",
                 [
                     "kw_var_get",
-                    Capture("var_name"),
+                    Capture("var_name", "address"),
                 ],
                 lambda runtime, captures:
                     runtime.get(captures[0])
             )
         }
 
+    def type_add(self, name, pattern):
+        self.types.append({name: pattern})
+
+    def type_contains(self, name):
+        return name in self.types.keys()
+
+    def type_get(self, name):
+        print(self.types[name])
+        return self.types[name]
+
+    def type_del(self, name):
+        del self.types[name]
+
     def rule_add(self, name, match, result):
         self.rules[name] = Rule(match, result)
 
     def rule_del(self, name):
         del self.rules[name]
+
+    def mem_add(self, address):
+        self.memory.append(address)
+
+    def mem_contains(self, address):
+        return address in self.memory
+
+    def mem_del(self, address):
+        del self.memory[address]
 
     def compile(self, source_code):
         # print("Micro compile: | `" + source_code + "`")
@@ -81,7 +114,7 @@ class MicroCompiler:
                 # print("checking rule `" + rule.name + "`")
                 rule_result = rule.check(
                     self,
-                    tokens[:len(rule.match)]
+                    tokens[:len(rule)]
                 )
                 print("Rule Result: ", str(rule_result))
 
