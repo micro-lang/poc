@@ -28,4 +28,3 @@ The `Micro` programming language aims to be a minimal, highly expandable languag
 </div>
 
 - Submit a [Issue](https://github.com/micro-lang/poc/issues/new) or  [Pull Request](https://github.com/micro-lang/poc/pulls)
-- Contact me.
